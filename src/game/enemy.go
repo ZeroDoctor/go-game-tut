@@ -1,7 +1,7 @@
-package main
+package game
 
 import "github.com/zerodoctor/go-tut/src/ecs"
 
-type Hero struct {
+type Enemy struct {
 	*ecs.Entity
 }

@@ -10,6 +10,8 @@ import (
 // TODO: redo
 
 type ISystem interface {
+	Name() string
+
 	Init()
 	Update(dt float64)
 
@@ -23,7 +25,7 @@ type System struct {
 	treeMap      map[string]*rbt.RbTree
 }
 
-func NewSystem(requirements ...string) *System {
+func NewSystem(name string, requirements ...string) *System {
 	return &System{
 		requirements: requirements,
 		treeMap:      make(map[string]*rbt.RbTree),

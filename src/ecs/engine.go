@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ByteArena/box2d"
 	"github.com/zerodoctor/go-tut/src/util"
 
 	"golang.org/x/image/colornames"
@@ -15,8 +16,17 @@ import (
 type Engine struct {
 	Win      *pixelgl.Window
 	Cfg      pixelgl.WindowConfig
+	World    *box2d.B2World
 	systems  []ISystem
 	entities []IEntity
+}
+
+func NewEngine(Win *pixelgl.Window, Cfg pixelgl.WindowConfig, World *box2d.B2World) *Engine {
+	return &Engine{
+		Win:   Win,
+		Cfg:   Cfg,
+		World: World,
+	}
 }
 
 func (e *Engine) AddEntity(entity IEntity) {
@@ -33,6 +43,10 @@ outter:
 		}
 		s.AddEntity(entity)
 	}
+}
+
+func (e *Engine) AddEntityToSystem(entity IEntity, system string) {
+
 }
 
 func (e *Engine) AddComponent(entity IEntity, component IComponent) {
@@ -71,6 +85,8 @@ func (e *Engine) Update() {
 		for _, s := range e.systems {
 			s.Update(dt)
 		}
+
+		e.World.Step(1.0/60.0, 8.0, 3.0)
 
 		for _, b := range util.GetAllBatches() {
 			b.Draw(e.Win)
