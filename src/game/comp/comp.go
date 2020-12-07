@@ -18,6 +18,7 @@ type VelocityComp struct {
 	Vx, Vy     float64
 	Maxv, Minv float64
 	Speed      float64
+	DeAccel    float64
 }
 
 func (v VelocityComp) Name() string {

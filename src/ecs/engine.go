@@ -94,6 +94,7 @@ func (e *Engine) Update() {
 		}
 
 		e.Win.Update()
+		e.World.ClearForces()
 
 		frames++
 		select {

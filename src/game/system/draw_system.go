@@ -5,6 +5,7 @@ import (
 	"github.com/ocdogan/rbt"
 	"github.com/zerodoctor/go-tut/src/ecs"
 	"github.com/zerodoctor/go-tut/src/game/comp"
+	"github.com/zerodoctor/go-tut/src/util"
 )
 
 type DrawSystem struct {
@@ -33,6 +34,9 @@ func (d *DrawSystem) Update(dt float64) {
 			render.Scale = 1.0
 		}
 
-		render.Sprite.Draw(render.Batch, pixel.IM.Scaled(pixel.ZV, render.Scale).Moved(pixel.Vec{X: pos.X, Y: pos.Y}))
+		bodyPos := pos.Body.GetPosition()
+		x := util.MetersToPixel(bodyPos.X)
+		y := util.MetersToPixel(bodyPos.Y)
+		render.Sprite.Draw(render.Batch, pixel.IM.Scaled(pixel.ZV, render.Scale).Moved(pixel.Vec{X: x, Y: y}))
 	})
 }

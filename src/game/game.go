@@ -1,6 +1,8 @@
 package game
 
 import (
+	"fmt"
+
 	"github.com/ByteArena/box2d"
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
@@ -11,6 +13,16 @@ import (
 )
 
 func Run() {
+
+	err := util.LoadSpriteSheet("res/entity/wizard_player.png", "player.png", 64.0, 64.0)
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = util.LoadSpriteSheet("res/entity/enemy/monsters.png", "monsters.png", 16.0, 24.0)
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	cfg := pixelgl.WindowConfig{
 		Title:  "Your mom 2.0",
 		Bounds: pixel.R(0, 0, 1024, 768),
@@ -24,55 +36,81 @@ func Run() {
 	gravity := box2d.MakeB2Vec2(0.0, 0.0)
 	world := box2d.MakeB2World(gravity)
 
+	world.SetContactListener(&ContactListener{})
+
 	engine := ecs.NewEngine(win, cfg, &world)
 
+	hero := &Hero{}
+	hbody := CreateBox2DDefault(
+		&world, hero,
+		0.0, 0.0, 32.0, 32.0,
+		1.0, 0.3,
+	)
+
+	hbatch, err := util.GetBatch("player.png")
+	if err != nil {
+		panic(err)
+	}
 	hRender := &comp.RenderComp{
-		Sprite: util.GetSprite("res/entity/wizard_player.png", 64*0, 64*7, 64*1, 64*8),
-		Batch:  util.GetBatch("res/entity/wizard_player.png"),
+		Sprite: util.GetSprite("player.png", 0, 2, 1, 3),
+		Batch:  hbatch,
 		Scale:  1.5,
 	}
-
-	hbodydef := box2d.NewB2BodyDef()
-	hbodydef.Type = box2d.B2BodyType.B2_dynamicBody
-	hbodydef.Position.Set(0.0, 0.0)
-	hbody := world.CreateBody(hbodydef)
-
-	size := util.PixelToMeters(32.0)
-	hpoly := box2d.B2PolygonShape{}
-	hpoly.SetAsBox(size, size)
-	hbody.CreateFixture(&hpoly, 0.0)
-
-	hFixDef := box2d.B2FixtureDef{}
-	hFixDef.Shape = &hpoly
-	hFixDef.Density = 1.0
-	hFixDef.Friction = 0.3
-
-	hbody.CreateFixtureFromDef(&hFixDef)
-
-	hPosition := &comp.PositionComp{X: 0.0, Y: 0.0, Body: hbody}
-	hVelocity := &comp.VelocityComp{Maxv: 0.95, Minv: -0.95, Speed: 0.9}
+	hPosition := &comp.PositionComp{Body: hbody}
+	hVelocity := &comp.VelocityComp{Maxv: 0.75, Minv: -0.75, Speed: 0.9}
 	hKeyDirection := &comp.DirectionComp{}
 	hCamera := &comp.CameraComp{Zoom: 1.0, Speed: 500.0}
 
-	hero := &Hero{
-		Entity: ecs.EntityFactory.NewEntity(
-			"Player", hRender, hPosition,
-			hVelocity, hKeyDirection, hCamera,
-		),
-	}
+	hero.Entity = ecs.EntityFactory.NewEntity(
+		"Player", hRender, hPosition,
+		hVelocity, hKeyDirection, hCamera,
+	)
 
+	enemy := &Enemy{}
+	ebody := CreateBox2DDefault(
+		&world, enemy,
+		128.0, 128.0, 16.0, 24.0,
+		1.0, 0.3,
+	)
+
+	ebatch, err := util.GetBatch("monsters.png")
+	if err != nil {
+		panic(err)
+	}
 	eRender := &comp.RenderComp{
-		Sprite: util.GetSprite("res/entity/enemy/monsters.png", 0, 24*8, 16, 24*9),
-		Batch:  util.GetBatch("res/entity/enemy/monsters.png"),
+		Sprite: util.GetSprite("monsters.png", 0, 1, 1, 2),
+		Batch:  ebatch,
 		Scale:  3.0,
 	}
-	ePosition := &comp.PositionComp{X: 128.0, Y: 128.0}
+	eVelocity := &comp.VelocityComp{Maxv: 0.95, Minv: -0.95, Speed: 0.9}
+	ePosition := &comp.PositionComp{Body: ebody}
 
-	enemy := &Enemy{
-		Entity: ecs.EntityFactory.NewEntity(
-			"Player", ePosition, eRender,
-		),
+	enemy.Entity = ecs.EntityFactory.NewEntity(
+		"Enemy", ePosition, eVelocity, eRender,
+	)
+
+	enemy1 := &Enemy{}
+	ebody1 := CreateBox2DDefault(
+		&world, enemy1,
+		-128.0, -128.0, 16.0, 24.0,
+		1.0, 0.3,
+	)
+
+	ebatch1, err := util.GetBatch("monsters.png")
+	if err != nil {
+		panic(err)
 	}
+	eRender1 := &comp.RenderComp{
+		Sprite: util.GetSprite("monsters.png", 0, 2, 1, 3),
+		Batch:  ebatch1,
+		Scale:  3.0,
+	}
+	ePosition1 := &comp.PositionComp{Body: ebody1}
+	eVelocity1 := &comp.VelocityComp{Maxv: 0.95, Minv: -0.95, Speed: 0.9}
+
+	enemy1.Entity = ecs.EntityFactory.NewEntity(
+		"Enemy1", eVelocity1, ePosition1, eRender1,
+	)
 
 	engine.AddSystem(system.NewCamSystem(win))
 	engine.AddSystem(system.NewKeySystem(win))
@@ -81,6 +119,32 @@ func Run() {
 
 	engine.AddEntity(hero)
 	engine.AddEntity(enemy)
+	engine.AddEntity(enemy1)
 
 	engine.Update()
+}
+
+func CreateBox2DDefault(world *box2d.B2World, entity ecs.IEntity, x, y, w, h float64, density, friction float64) *box2d.B2Body {
+	xm := util.PixelToMeters(x)
+	ym := util.PixelToMeters(y)
+	wm := util.PixelToMeters(w)
+	hm := util.PixelToMeters(h)
+
+	bodydef := box2d.NewB2BodyDef()
+	bodydef.Type = box2d.B2BodyType.B2_dynamicBody
+	bodydef.Position.Set(xm, ym)
+	body := world.CreateBody(bodydef)
+
+	poly := box2d.B2PolygonShape{}
+	poly.SetAsBox(wm, hm)
+
+	fixdef := box2d.B2FixtureDef{}
+	fixdef.UserData = entity
+	fixdef.Shape = &poly
+	fixdef.Density = density
+	fixdef.Friction = friction
+
+	body.CreateFixtureFromDef(&fixdef)
+
+	return body
 }

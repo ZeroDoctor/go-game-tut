@@ -30,11 +30,13 @@ func (k *KeySystem) Update(dt float64) {
 		vel := k.InspectEntity(value).GetComponent("velocity").(*comp.VelocityComp)
 		dkey := k.InspectEntity(value).GetComponent("direction").(*comp.DirectionComp)
 
+		deacc := 1.275
+
 		if k.Win.Pressed(pixelgl.KeyA) {
 			vel.Vx -= vel.Speed * dt
 			dkey.Left = true
 		} else if vel.Vx < 0.0 {
-			vel.Vx += vel.Speed * dt * 1.875
+			vel.Vx += vel.Speed * dt * deacc
 			if vel.Vx > 0.0 {
 				vel.Vx = 0.0
 			}
@@ -45,7 +47,7 @@ func (k *KeySystem) Update(dt float64) {
 			vel.Vx += vel.Speed * dt
 			dkey.Right = true
 		} else if vel.Vx > 0.0 {
-			vel.Vx -= vel.Speed * dt * 1.875
+			vel.Vx -= vel.Speed * dt * deacc
 			if vel.Vx < 0.0 {
 				vel.Vx = 0.0
 			}
@@ -56,7 +58,7 @@ func (k *KeySystem) Update(dt float64) {
 			vel.Vy -= vel.Speed * dt
 			dkey.Down = true
 		} else if vel.Vy < 0.0 {
-			vel.Vy += vel.Speed * dt * 1.875
+			vel.Vy += vel.Speed * dt * deacc
 			if vel.Vy > 0.0 {
 				vel.Vy = 0.0
 			}
@@ -67,7 +69,7 @@ func (k *KeySystem) Update(dt float64) {
 			vel.Vy += vel.Speed * dt
 			dkey.Up = true
 		} else if vel.Vy > 0.0 {
-			vel.Vy -= vel.Speed * dt * 1.875
+			vel.Vy -= vel.Speed * dt * deacc
 			if vel.Vy < 0.0 {
 				vel.Vy = 0.0
 			}

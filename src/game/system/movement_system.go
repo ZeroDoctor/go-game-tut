@@ -1,6 +1,7 @@
 package system
 
 import (
+	"github.com/ByteArena/box2d"
 	"github.com/ocdogan/rbt"
 	"github.com/zerodoctor/go-tut/src/ecs"
 	"github.com/zerodoctor/go-tut/src/game/comp"
@@ -26,8 +27,9 @@ func (m *MovementSystem) Name() string {
 
 func (m *MovementSystem) Update(dt float64) {
 	m.Entities(func(iterator rbt.RbIterator, key rbt.RbKey, value interface{}) {
-		pos := m.InspectEntity(value).GetComponent("position").(*comp.PositionComp)
-		vel := m.InspectEntity(value).GetComponent("velocity").(*comp.VelocityComp)
+		entity := m.InspectEntity(value)
+		pos := entity.GetComponent("position").(*comp.PositionComp)
+		vel := entity.GetComponent("velocity").(*comp.VelocityComp)
 
 		if vel.Vx > vel.Maxv {
 			vel.Vx = vel.Maxv
@@ -43,7 +45,16 @@ func (m *MovementSystem) Update(dt float64) {
 			vel.Vy = vel.Minv
 		}
 
-		pos.X += vel.Vx
-		pos.Y += vel.Vy
+		boxVel := pos.Body.GetLinearVelocity()
+
+		boxVelChangeX := vel.Vx - boxVel.X
+		boxVelChangeY := vel.Vy - boxVel.Y
+		impulseX := pos.Body.GetMass() * boxVelChangeX
+		impulseY := pos.Body.GetMass() * boxVelChangeY
+
+		velocity := box2d.B2Vec2{X: impulseX, Y: impulseY}
+		position := pos.Body.GetPosition()
+
+		pos.Body.ApplyLinearImpulse(velocity, position, true)
 	})
 }

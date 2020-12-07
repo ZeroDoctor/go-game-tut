@@ -6,6 +6,7 @@ import (
 	"github.com/ocdogan/rbt"
 	"github.com/zerodoctor/go-tut/src/ecs"
 	"github.com/zerodoctor/go-tut/src/game/comp"
+	"github.com/zerodoctor/go-tut/src/util"
 )
 
 type CamSystem struct {
@@ -30,10 +31,11 @@ func (c *CamSystem) Update(dt float64) {
 	c.Entities(func(iterator rbt.RbIterator, key rbt.RbKey, value interface{}) {
 
 		camera := c.InspectEntity(value).GetComponent("camera").(*comp.CameraComp)
-		targetPos := c.InspectEntity(value).GetComponent("position").(*comp.PositionComp)
+		pos := c.InspectEntity(value).GetComponent("position").(*comp.PositionComp)
+		targetPos := pos.Body.GetPosition()
 
-		camera.X = targetPos.X
-		camera.Y = targetPos.Y
+		camera.X = util.MetersToPixel(targetPos.X)
+		camera.Y = util.MetersToPixel(targetPos.Y)
 
 		camPos := pixel.Vec{X: camera.X, Y: camera.Y}
 
