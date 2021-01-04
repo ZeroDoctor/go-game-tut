@@ -3,8 +3,8 @@ package system
 import (
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/ocdogan/rbt"
-	"github.com/zerodoctor/go-tut/src/ecs"
-	"github.com/zerodoctor/go-tut/src/game/comp"
+	"github.com/zerodoctor/go-tut/ecs"
+	"github.com/zerodoctor/go-tut/game/comp"
 )
 
 type KeySystem struct {

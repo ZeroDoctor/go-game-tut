@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/ByteArena/box2d"
-	"github.com/zerodoctor/go-tut/src/ecs"
+	"github.com/zerodoctor/go-tut/ecs"
 )
 
 type ContactListener struct {

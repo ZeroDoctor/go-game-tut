@@ -25,7 +25,7 @@ type System struct {
 	treeMap      map[string]*rbt.RbTree
 }
 
-func NewSystem(name string, requirements ...string) *System {
+func NewSystem(requirements ...string) *System {
 	return &System{
 		requirements: requirements,
 		treeMap:      make(map[string]*rbt.RbTree),

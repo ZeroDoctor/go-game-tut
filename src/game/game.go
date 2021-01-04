@@ -1,26 +1,24 @@
 package game
 
 import (
-	"fmt"
-
 	"github.com/ByteArena/box2d"
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
-	"github.com/zerodoctor/go-tut/src/ecs"
-	"github.com/zerodoctor/go-tut/src/game/comp"
-	"github.com/zerodoctor/go-tut/src/game/system"
-	"github.com/zerodoctor/go-tut/src/util"
+	"github.com/zerodoctor/go-tut/ecs"
+	"github.com/zerodoctor/go-tut/game/comp"
+	"github.com/zerodoctor/go-tut/game/system"
+	"github.com/zerodoctor/go-tut/util"
 )
 
 func Run() {
 
 	err := util.LoadSpriteSheet("res/entity/wizard_player.png", "player.png", 64.0, 64.0)
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 	err = util.LoadSpriteSheet("res/entity/enemy/monsters.png", "monsters.png", 16.0, 24.0)
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 	cfg := pixelgl.WindowConfig{

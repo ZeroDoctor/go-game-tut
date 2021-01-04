@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/ByteArena/box2d"
-	"github.com/zerodoctor/go-tut/src/util"
+	"github.com/zerodoctor/go-tut/util"
 
 	"golang.org/x/image/colornames"
 
