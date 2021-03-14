@@ -12,7 +12,7 @@ func main() {
 
 	args := os.Args[1:]
 
-	if args[0] == "-test" {
+	if len(args) > 0 && args[0] == "-test" {
 		test.Route(args[1])
 		return
 	}
