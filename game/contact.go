@@ -1,21 +1,18 @@
 package game
 
 import (
-	"fmt"
-
 	"github.com/ByteArena/box2d"
-	"github.com/zerodoctor/go-tut/ecs"
 )
 
 type ContactListener struct {
 }
 
 func (c *ContactListener) BeginContact(contact box2d.B2ContactInterface) { // contact has to be backed by a pointer
-	entityA, okA := contact.GetFixtureA().GetUserData().(ecs.IEntity)
+	/* entityA, okA := contact.GetFixtureA().GetUserData().(ecs.IEntity)
 	entityB, okB := contact.GetFixtureB().GetUserData().(ecs.IEntity)
 	if okA && okB {
 
-	}
+	} */
 }
 
 func (c *ContactListener) EndContact(contact box2d.B2ContactInterface) { // contact has to be backed by a pointer
